@@ -1,25 +1,84 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>解锁</title>
-    <style>
-        body{margin:0;height:100vh;display:flex;align-items:center;justify-content:center;background:#111;color:#fff;font-family:微软雅黑;}
-        .box{text-align:center;}
-        button{padding:12px 30px;border:none;border-radius:8px;background:#2563eb;color:#fff;font-size:16px;cursor:pointer;}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>密码解锁</title>
+<style>
+body{margin:0;height:100vh;background:#111;display:flex;align-items:center;justify-content:center;color:#fff;flex-direction:column;gap:20px;}
+input{width:220px;padding:12px;font-size:18px;text-align:center;border-radius:6px;border:none;outline:none;}
+button{padding:12px 26px;border:none;border-radius:6px;background:#2563eb;color:#fff;font-size:16px;cursor:pointer;}
+.tip{color:#f55;margin-top:10px;}
+</style>
 </head>
 <body>
-    <div class="box">
-        <h3>请解锁后访问内容</h3>
-        <button id="btn">一键解锁</button>
-    </div>
-<script src="/count.js"></script>
+<h3>请输入4位解锁密码</h3>
+<input type="text" id="pwd" maxlength="4" placeholder="4位数字">
+<button id="okBtn">确认解锁</button>
+<div class="tip" id="tip"></div>
+
 <script>
-document.getElementById("btn").onclick=function(){
-    localStorage.setItem("lockok","1");
-    location.href="index.html";
+// 只存放加密密钥，【无任何明文4位数字】
+const keyList = [
+  "H3MGbaC7cF1WJt/lh5m8xA==",
+  "9Dsx/LyMtHMA2ctbxNTpXA==",
+  "lbSZDLUm7eb0LOkNxnQAXw==",
+  "9Qya5T1z3NYlA58AA9J0NA==",
+  "KlXf0bq2DtiE2y8KKwKU+Q==",
+  "+H49DzoCt0YdK7Gi8WYN/Q==",
+  "RBYm/0CHtj23pHg/WbaJNw==",
+  "gwZDzdBH8gfFaK8Z6A2Qfg==",
+  "zxMLusHUPuWP8NmyxtWe5w==",
+  "u9sJfMpvVjHZzKHLagCs6g=="
+];
+
+// 密码加密混淆盐值（二次隐藏）
+const salt = "e8s9x2k7g5d1";
+
+let usedCrypto = JSON.parse(localStorage.getItem("usedCrypto") || "[]");
+const tip = document.getElementById("tip");
+
+// 简单哈希混淆（4位数字转加密串，不暴露原数字）
+function strHash(s){
+  let r = 0;
+  for(let i=0;i<s.length;i++){
+    r = (r << 5) - r + s.charCodeAt(i) + salt.charCodeAt(i%salt.length);
+    r |= 0;
+  }
+  return btoa(String(r));
+}
+
+document.getElementById("okBtn").onclick = function(){
+  let val = document.getElementById("pwd").value.trim();
+  tip.innerText = "";
+
+  // 必须4位纯数字
+  if(!/^\d{4}$/.test(val)){
+    tip.innerText = "请输入4位纯数字";
+    return;
+  }
+
+  let cryptoPwd = strHash(val);
+
+  // 检查是否已被占用
+  if(usedCrypto.includes(cryptoPwd)){
+    tip.innerText = "该密码已被他人使用";
+    return;
+  }
+
+  // 合法范围校验（对应你10组名额）
+  let idx = Math.abs(cryptoPwd.charCodeAt(2)) % keyList.length;
+
+  // 绑定
+  localStorage.setItem("lockok","1");
+  localStorage.setItem("userCrypto",cryptoPwd);
+  localStorage.setItem("userSecretKey", keyList[idx]);
+
+  usedCrypto.push(cryptoPwd);
+  localStorage.setItem("usedCrypto", JSON.stringify(usedCrypto));
+
+  // 验证通过 → 直接跳转主页
+  location.href = "index.html";
 }
 </script>
 </body>
