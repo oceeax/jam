@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>页面3</title>
+    <style>
+        body{margin:0;height:100vh;display:flex;align-items:center;justify-content:center;background:#111;color:#fff;flex-direction:column;}
+        a{margin-top:20px;padding:8px 20px;background:#2563eb;border-radius:6px;color:#fff;text-decoration:none;}
+    </style>
+</head>
+<body>
+    <h3>页面 3 内容</h3>
+    <a href="index.html">返回主页</a>
+<script src="/count.js"></script>
+<script>
+if(!localStorage.getItem("lockok")){
+    location.href="unlock.html";
+}
+</script>
+</body>
+</html>
