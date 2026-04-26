@@ -35,39 +35,7 @@
         <div id="totalNum">加载中...</div>
     </div>
 
-    <script>
-        // 你的 count.txt 地址，和仓库对应上
-        const txtUrl = "https://oceeax.github.io/jam/count.txt";
-        const key = "user_has_counted";
-
-        async function getTotal() {
-            try {
-                let res = await fetch(txtUrl, { cache: "no-store" });
-                let num = await res.text();
-                return parseInt(num.trim()) || 0;
-            } catch (e) {
-                // 读取失败时，用本地备份兜底
-                return parseInt(localStorage.getItem("saveTotal")) || 0;
-            }
-        }
-
-        async function updateTotal() {
-            let total = await getTotal();
-
-            // 新用户才+1
-            if (!localStorage.getItem(key)) {
-                total += 1;
-                localStorage.setItem(key, "1");
-            }
-
-            // 每次都把最新数字存在本地，防止断档
-            localStorage.setItem("saveTotal", total);
-
-            // 显示给用户看
-            document.getElementById("totalNum").innerText = total;
-        }
-
-        updateTotal();
-    </script>
+    <!-- 引入公共统计JS，全站统一计数 -->
+    <script src="/count.js"></script>
 </body>
 </html>
