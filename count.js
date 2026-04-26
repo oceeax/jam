@@ -36,7 +36,7 @@ async function initCount() {
     return;
   }
 
-  // 全新用户 → 编号+1
+  // 全新用户 → 编号+1，并且锁死
   let newId = base + 1;
   // 保存标记 + 专属编号
   localStorage.setItem(visitFlag, "ok");
