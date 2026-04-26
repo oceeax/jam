@@ -35,7 +35,20 @@
         <div id="totalNum">加载中...</div>
     </div>
 
-    <!-- 引入公共统计JS，全站统一计数 -->
     <script src="/count.js"></script>
+    <script>
+        // 把当前用户编号同步显示到中间
+        document.addEventListener("DOMContentLoaded", () => {
+            // 等 count.js 加载完成，读取编号
+            setTimeout(() => {
+                const num = localStorage.getItem("user_only_id");
+                if (num) {
+                    document.getElementById("totalNum").innerText = num;
+                } else {
+                    document.getElementById("totalNum").innerText = "获取失败";
+                }
+            }, 500);
+        });
+    </script>
 </body>
 </html>
